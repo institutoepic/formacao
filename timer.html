@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instituto Épic - Timer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #040814; /* Fundo escuro inspirado na imagem */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Montserrat', 'Segoe UI', sans-serif;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .title-container {
+            text-align: center;
+            margin-bottom: 3rem;
+            z-index: 10;
+        }
+
+        .instituto {
+            font-size: 2rem;
+            font-weight: 400;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .epic {
+            font-size: 7rem;
+            font-weight: 900;
+            color: #00ffff; /* Ciano neon do logo */
+            line-height: 0.8;
+            margin-top: -5px;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+            letter-spacing: -2px;
+        }
+
+        .timer {
+            font-size: 9rem;
+            font-weight: bold;
+            color: #ffffff;
+            /* Efeito de brilho misturando ciano e magenta/roxo */
+            text-shadow: 0 0 15px #b700ff, 0 0 30px #b700ff, 0 0 50px #00ffff;
+            font-variant-numeric: tabular-nums;
+            z-index: 10;
+        }
+
+        /* Efeito de luzes na base simulando as linhas da imagem */
+        .lights-bg {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 50vh;
+            background: radial-gradient(circle at bottom center, rgba(0, 255, 255, 0.2) 0%, rgba(183, 0, 255, 0.15) 30%, transparent 60%);
+            z-index: 1;
+            pointer-events: none;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="lights-bg"></div>
+
+    <div class="title-container">
+        <div class="instituto">Instituto</div>
+        <div class="epic">epic</div>
+    </div>
+
+    <div class="timer" id="timerDisplay">10:00</div>
+
+    <script>
+        // Configuração de tempo inicial: 10 minutos em segundos
+        let tempoRestante = 10 * 60; 
+        const display = document.getElementById('timerDisplay');
+
+        function atualizarTimer() {
+            // Calcula os minutos e segundos restantes
+            const minutos = Math.floor(tempoRestante / 60);
+            let segundos = tempoRestante % 60;
+
+            // Formata para ter sempre dois dígitos (ex: 09 ao invés de 9)
+            const minutosFormatados = minutos < 10 ? '0' + minutos : minutos;
+            const segundosFormatados = segundos < 10 ? '0' + segundos : segundos;
+
+            // Atualiza o texto na tela
+            display.textContent = `${minutosFormatados}:${segundosFormatados}`;
+
+            // Reduz 1 segundo se ainda houver tempo, senão para o timer
+            if (tempoRestante > 0) {
+                tempoRestante--;
+            } else {
+                clearInterval(intervalo);
+            }
+        }
+
+        // Chama a função imediatamente para não ter delay de 1s
+        atualizarTimer();
+        
+        // Atualiza o timer a cada 1000 milissegundos (1 segundo)
+        const intervalo = setInterval(atualizarTimer, 1000);
+    </script>
+
+</body>
+</html>
