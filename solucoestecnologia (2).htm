@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Quiz da Tecnologia — Soluções</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html, body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+}
+
+body{
+  font-family:"Segoe UI", Arial, sans-serif;
+
+  background:
+    radial-gradient(circle at top, #14532d 0%, #020617 60%),
+    linear-gradient(135deg,#0f172a,#111827);
+
+  color:white;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+
+.container{
+  width:100vw;
+  height:100vh;
+
+  padding:1.2vh 1.2vw;
+
+  display:grid;
+
+  grid-template-rows:
+    auto
+    auto
+    1fr
+    minmax(20vh,28vh)
+    auto
+    auto;
+
+  gap:1vh;
+}
+
+/* =========================
+   TOPO
+========================= */
+
+.topo{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.titulo{
+  font-size:clamp(26px,2.4vw,58px);
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:2px;
+
+  color:#dcfce7;
+
+  text-shadow:
+    0 0 10px rgba(34,197,94,0.6),
+    0 0 30px rgba(34,197,94,0.3);
+}
+
+.rodada{
+  font-size:clamp(18px,1.3vw,32px);
+
+  padding:1vh 1.4vw;
+
+  border-radius:999px;
+
+  background:rgba(255,255,255,0.08);
+
+  border:1px solid rgba(255,255,255,0.15);
+
+  backdrop-filter:blur(10px);
+}
+
+/* =========================
+   PLACAR
+========================= */
+
+.placar{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1vw;
+}
+
+.time{
+  padding:1vh;
+
+  border-radius:24px;
+
+  text-align:center;
+
+  font-weight:900;
+
+  border:2px solid rgba(255,255,255,0.12);
+
+  box-shadow:
+    0 12px 30px rgba(0,0,0,0.35),
+    inset 0 1px 1px rgba(255,255,255,0.12);
+}
+
+.time1{
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+}
+
+.time2{
+  background:linear-gradient(135deg,#f97316,#c2410c);
+}
+
+.time{
+  font-size:clamp(24px,2vw,42px);
+}
+
+.time span{
+  font-size:clamp(36px,3vw,72px);
+  margin-left:12px;
+}
+
+/* =========================
+   CARD DA PERGUNTA
+========================= */
+
+.card-pergunta{
+  width:100%;
+  height:100%;
+
+  border-radius:36px;
+
+  background:rgba(255,255,255,0.08);
+
+  border:1px solid rgba(255,255,255,0.15);
+
+  backdrop-filter:blur(16px);
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.35),
+    inset 0 1px 1px rgba(255,255,255,0.08);
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+
+  text-align:center;
+
+  padding:2vh 2vw;
+}
+
+.bloco{
+  color:#86efac;
+
+  text-transform:uppercase;
+
+  letter-spacing:2px;
+
+  font-weight:900;
+
+  margin-bottom:2vh;
+
+  font-size:clamp(18px,1.5vw,36px);
+}
+
+.pergunta{
+  width:95%;
+
+  font-size:clamp(34px,3.2vw,82px);
+
+  font-weight:900;
+
+  line-height:1.15;
+
+  text-shadow:0 4px 10px rgba(0,0,0,0.35);
+}
+
+.status{
+  margin-top:2vh;
+
+  min-height:4vh;
+
+  color:#bbf7d0;
+
+  font-weight:900;
+
+  font-size:clamp(22px,1.8vw,44px);
+}
+
+/* =========================
+   BOTÕES DOS TIMES
+========================= */
+
+.botoes-times{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1vw;
+
+  height:100%;
+}
+
+button{
+  border:none;
+
+  color:white;
+
+  cursor:pointer;
+
+  transition:0.18s ease;
+
+  border-radius:30px;
+
+  font-weight:900;
+}
+
+button:hover{
+  transform:translateY(-4px);
+}
+
+button:active{
+  transform:scale(0.98);
+}
+
+button:disabled{
+  opacity:0.4;
+  cursor:not-allowed;
+}
+
+.botao-resposta{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+
+  border:5px solid rgba(255,255,255,0.8);
+
+  box-shadow:
+    0 16px 40px rgba(0,0,0,0.45);
+}
+
+.btn-time1{
+  background:
+    linear-gradient(135deg,#3b82f6,#1d4ed8);
+}
+
+.btn-time2{
+  background:
+    linear-gradient(135deg,#fb923c,#ea580c);
+}
+
+.nome-time{
+  font-size:clamp(28px,2vw,50px);
+}
+
+.aperte-aqui{
+  font-size:clamp(48px,4vw,120px);
+
+  line-height:1;
+
+  margin-top:1vh;
+
+  text-shadow:
+    0 4px 10px rgba(0,0,0,0.4);
+}
+
+.subtexto{
+  margin-top:1vh;
+
+  font-size:clamp(18px,1.3vw,32px);
+}
+
+/* =========================
+   BRILHO DOS VENCEDORES
+========================= */
+
+.botao-vencedor-azul{
+  animation:brilhoAzul 0.7s infinite alternate;
+}
+
+.botao-vencedor-laranja{
+  animation:brilhoLaranja 0.7s infinite alternate;
+}
+
+@keyframes brilhoAzul{
+  from{
+    box-shadow:0 0 20px #60a5fa;
+  }
+
+  to{
+    box-shadow:
+      0 0 40px #93c5fd,
+      0 0 90px #3b82f6;
+  }
+}
+
+@keyframes brilhoLaranja{
+  from{
+    box-shadow:0 0 20px #fdba74;
+  }
+
+  to{
+    box-shadow:
+      0 0 40px #fed7aa,
+      0 0 90px #fb923c;
+  }
+}
+
+/* =========================
+   ÁREA JUIZ
+========================= */
+
+.area-juiz{
+  display:grid;
+
+  grid-template-columns:1fr 1fr 1fr;
+
+  gap:1vw;
+
+  height:8vh;
+}
+
+.area-juiz button{
+  font-size:clamp(18px,1.4vw,34px);
+
+  box-shadow:
+    0 10px 24px rgba(0,0,0,0.35);
+}
+
+.correta{
+  background:linear-gradient(135deg,#22c55e,#15803d);
+}
+
+.errada{
+  background:linear-gradient(135deg,#ef4444,#991b1b);
+}
+
+.proxima{
+  background:linear-gradient(135deg,#64748b,#334155);
+}
+
+/* =========================
+   FINAL
+========================= */
+
+.final{
+  display:none;
+
+  flex:1;
+
+  border-radius:36px;
+
+  background:rgba(255,255,255,0.08);
+
+  border:1px solid rgba(255,255,255,0.15);
+
+  backdrop-filter:blur(18px);
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.35);
+
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+
+  text-align:center;
+
+  padding:3vh 3vw;
+}
+
+.final h1{
+  font-size:clamp(50px,5vw,110px);
+}
+
+.vencedor{
+  margin:2vh 0;
+
+  color:#fde68a;
+
+  font-weight:900;
+
+  text-shadow:
+    0 0 20px rgba(255,255,255,0.3);
+
+  font-size:clamp(40px,4vw,90px);
+}
+
+.resultado-final{
+  line-height:1.4;
+
+  font-size:clamp(28px,2vw,54px);
+}
+
+.reiniciar{
+  margin-top:3vh;
+
+  padding:1.6vh 2vw;
+
+  background:
+    linear-gradient(135deg,#6366f1,#4338ca);
+
+  font-size:clamp(22px,1.5vw,38px);
+}
+
+.oculto{
+  display:none !important;
+}
+
+.dica{
+  text-align:center;
+
+  opacity:0.6;
+
+  font-size:clamp(12px,0.8vw,20px);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- TOPO -->
+  <div class="topo">
+
+    <div class="titulo">
+      Quiz da Tecnologia — Soluções
+    </div>
+
+    <div class="rodada" id="rodada">
+      Pergunta 1 de 7
+    </div>
+
+  </div>
+
+  <!-- PLACAR -->
+  <div class="placar">
+
+    <div class="time time1">
+      Time 1
+      <span id="pontos1">0</span>
+    </div>
+
+    <div class="time time2">
+      Time 2
+      <span id="pontos2">0</span>
+    </div>
+
+  </div>
+
+  <!-- CARD PERGUNTA -->
+  <div class="card-pergunta" id="telaJogo">
+
+    <div class="bloco">
+      Tecnologia como solução
+    </div>
+
+    <div class="pergunta" id="pergunta"></div>
+
+    <div class="status" id="status">
+      Quem apertar primeiro responde.
+    </div>
+
+  </div>
+
+  <!-- FINAL -->
+  <div class="final" id="telaFinal">
+
+    <h1>Fim do jogo!</h1>
+
+    <div class="vencedor" id="vencedor"></div>
+
+    <div class="resultado-final" id="resultadoFinal"></div>
+
+    <button class="reiniciar" onclick="reiniciarJogo()">
+      Jogar novamente
+    </button>
+
+  </div>
+
+  <!-- BOTÕES -->
+  <div class="botoes-times" id="botoesTimes">
+
+    <button
+      class="btn-time1 botao-resposta"
+      id="botao1"
+      onclick="apertou(1)"
+    >
+
+      <div class="nome-time">
+        Time 1
+      </div>
+
+      <div class="aperte-aqui">
+        APERTE
+      </div>
+
+      <div class="subtexto">
+        para responder
+      </div>
+
+    </button>
+
+    <button
+      class="btn-time2 botao-resposta"
+      id="botao2"
+      onclick="apertou(2)"
+    >
+
+      <div class="nome-time">
+        Time 2
+      </div>
+
+      <div class="aperte-aqui">
+        APERTE
+      </div>
+
+      <div class="subtexto">
+        para responder
+      </div>
+
+    </button>
+
+  </div>
+
+  <!-- JUIZ -->
+  <div class="area-juiz" id="areaJuiz">
+
+    <button
+      class="correta"
+      id="btnCorreta"
+      onclick="julgar(true)"
+      disabled
+    >
+      Correta
+    </button>
+
+    <button
+      class="errada"
+      id="btnErrada"
+      onclick="julgar(false)"
+      disabled
+    >
+      Errada
+    </button>
+
+    <button
+      class="proxima"
+      id="btnProxima"
+      onclick="proximaPergunta()"
+      disabled
+    >
+      Próxima
+    </button>
+
+  </div>
+
+  <div class="dica">
+    Atalhos:
+    Time 1 = A |
+    Time 2 = L |
+    Correta = C |
+    Errada = E |
+    Próxima = Espaço
+  </div>
+
+</div>
+
+<script>
+
+/* =========================
+   PERGUNTAS
+========================= */
+
+const perguntas = [
+
+  "Dê um exemplo de tecnologia ampliando o acesso ao conhecimento e à educação.",
+
+  "Dê um exemplo de como a tecnologia melhora a comunicação e a colaboração.",
+
+  "Cite um exemplo de como a tecnologia aumenta produtividade e eficiência.",
+
+  "Dê um exemplo de tecnologia ajudando a saúde ou o diagnóstico médico.",
+
+  "Cite um exemplo de tecnologia favorecendo inclusão e acessibilidade.",
+
+  "Dê um exemplo de tecnologia criando novas formas de participação social.",
+
+  "Cite um exemplo de tecnologia criando novas formas de aprender e ensinar."
+
+];
+
+/* =========================
+   VARIÁVEIS
+========================= */
+
+let perguntaAtual = 0;
+
+let pontos1 = 0;
+let pontos2 = 0;
+
+let primeiroTime = null;
+
+let perguntaJulgada = false;
+
+let timerResposta = null;
+
+/* =========================
+   ELEMENTOS
+========================= */
+
+const perguntaEl = document.getElementById("pergunta");
+
+const rodadaEl = document.getElementById("rodada");
+
+const statusEl = document.getElementById("status");
+
+const pontos1El = document.getElementById("pontos1");
+
+const pontos2El = document.getElementById("pontos2");
+
+const botao1 = document.getElementById("botao1");
+
+const botao2 = document.getElementById("botao2");
+
+const btnCorreta = document.getElementById("btnCorreta");
+
+const btnErrada = document.getElementById("btnErrada");
+
+const btnProxima = document.getElementById("btnProxima");
+
+const telaJogo = document.getElementById("telaJogo");
+
+const telaFinal = document.getElementById("telaFinal");
+
+const botoesTimes = document.getElementById("botoesTimes");
+
+const areaJuiz = document.getElementById("areaJuiz");
+
+const vencedorEl = document.getElementById("vencedor");
+
+const resultadoFinalEl = document.getElementById("resultadoFinal");
+
+/* =========================
+   SONS
+========================= */
+
+function tocarSom(freqInicial, freqFinal, duracao, tipo="square"){
+
+  const audio = new (window.AudioContext || window.webkitAudioContext)();
+
+  const osc = audio.createOscillator();
+
+  const gain = audio.createGain();
+
+  osc.type = tipo;
+
+  osc.frequency.setValueAtTime(freqInicial, audio.currentTime);
+
+  osc.frequency.exponentialRampToValueAtTime(
+    freqFinal,
+    audio.currentTime + duracao
+  );
+
+  gain.gain.setValueAtTime(0.25, audio.currentTime);
+
+  gain.gain.exponentialRampToValueAtTime(
+    0.001,
+    audio.currentTime + duracao
+  );
+
+  osc.connect(gain);
+
+  gain.connect(audio.destination);
+
+  osc.start();
+
+  osc.stop(audio.currentTime + duracao);
+
+}
+
+function somBotao(){
+  tocarSom(240,90,0.25);
+}
+
+function somResponderAgora(){
+  tocarSom(900,500,0.45);
+}
+
+function somErrado(){
+  tocarSom(180,80,0.38,"sawtooth");
+}
+
+function somCorreto(){
+
+  const audio = new (window.AudioContext || window.webkitAudioContext)();
+
+  [523,659,784].forEach((freq,i)=>{
+
+    const osc = audio.createOscillator();
+
+    const gain = audio.createGain();
+
+    osc.type = "sine";
+
+    osc.frequency.setValueAtTime(
+      freq,
+      audio.currentTime + i * 0.12
+    );
+
+    gain.gain.setValueAtTime(
+      0.22,
+      audio.currentTime + i * 0.12
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      audio.currentTime + i * 0.12 + 0.18
+    );
+
+    osc.connect(gain);
+
+    gain.connect(audio.destination);
+
+    osc.start(audio.currentTime + i * 0.12);
+
+    osc.stop(audio.currentTime + i * 0.12 + 0.18);
+
+  });
+
+}
+
+/* =========================
+   CARREGAR PERGUNTA
+========================= */
+
+function carregarPergunta(){
+
+  perguntaEl.textContent = perguntas[perguntaAtual];
+
+  rodadaEl.textContent =
+    `Pergunta ${perguntaAtual + 1} de ${perguntas.length}`;
+
+  statusEl.textContent =
+    "Quem apertar primeiro responde.";
+
+  primeiroTime = null;
+
+  perguntaJulgada = false;
+
+  if(timerResposta){
+
+    clearInterval(timerResposta);
+
+    timerResposta = null;
+
+  }
+
+  botao1.disabled = false;
+
+  botao2.disabled = false;
+
+  botao1.classList.remove("botao-vencedor-azul");
+
+  botao2.classList.remove("botao-vencedor-laranja");
+
+  btnCorreta.disabled = true;
+
+  btnErrada.disabled = true;
+
+  btnProxima.disabled = true;
+
+}
+
+/* =========================
+   APERTOU
+========================= */
+
+function apertou(time){
+
+  if(primeiroTime !== null || perguntaJulgada) return;
+
+  primeiroTime = time;
+
+  somBotao();
+
+  botao1.disabled = true;
+
+  botao2.disabled = true;
+
+  if(time === 1){
+
+    botao1.disabled = false;
+
+    botao1.classList.add("botao-vencedor-azul");
+
+  }else{
+
+    botao2.disabled = false;
+
+    botao2.classList.add("botao-vencedor-laranja");
+
+  }
+
+  btnCorreta.disabled = false;
+
+  btnErrada.disabled = false;
+
+  let segundos = 3;
+
+  statusEl.textContent =
+    `Time ${time} apertou primeiro! Comece em ${segundos}...`;
+
+  timerResposta = setInterval(()=>{
+
+    segundos--;
+
+    if(segundos > 0){
+
+      statusEl.textContent =
+        `Time ${time}, comece em ${segundos}...`;
+
+    }else{
+
+      clearInterval(timerResposta);
+
+      timerResposta = null;
+
+      somResponderAgora();
+
+      statusEl.textContent =
+        `RESPONDA AGORA, Time ${time}!`;
+
+    }
+
+  },1000);
+
+}
+
+/* =========================
+   JULGAR
+========================= */
+
+function julgar(correta){
+
+  if(primeiroTime === null || perguntaJulgada) return;
+
+  if(timerResposta){
+
+    clearInterval(timerResposta);
+
+    timerResposta = null;
+
+  }
+
+  let timePontuou;
+
+  if(correta){
+
+    somCorreto();
+
+    timePontuou = primeiroTime;
+
+    statusEl.textContent =
+      `Resposta correta! Ponto para o Time ${timePontuou}.`;
+
+  }else{
+
+    somErrado();
+
+    timePontuou =
+      primeiroTime === 1 ? 2 : 1;
+
+    statusEl.textContent =
+      `Resposta errada! Ponto para o Time ${timePontuou}.`;
+
+  }
+
+  if(timePontuou === 1){
+
+    pontos1++;
+
+    pontos1El.textContent = pontos1;
+
+  }else{
+
+    pontos2++;
+
+    pontos2El.textContent = pontos2;
+
+  }
+
+  perguntaJulgada = true;
+
+  btnCorreta.disabled = true;
+
+  btnErrada.disabled = true;
+
+  btnProxima.disabled = false;
+
+}
+
+/* =========================
+   PRÓXIMA
+========================= */
+
+function proximaPergunta(){
+
+  if(!perguntaJulgada) return;
+
+  perguntaAtual++;
+
+  if(perguntaAtual >= perguntas.length){
+
+    finalizarJogo();
+
+  }else{
+
+    carregarPergunta();
+
+  }
+
+}
+
+/* =========================
+   FINALIZAR
+========================= */
+
+function finalizarJogo(){
+
+  telaJogo.classList.add("oculto");
+
+  botoesTimes.classList.add("oculto");
+
+  areaJuiz.classList.add("oculto");
+
+  telaFinal.style.display = "flex";
+
+  rodadaEl.textContent = "Resultado Final";
+
+  resultadoFinalEl.innerHTML = `
+    Time 1:
+    <strong>${pontos1}</strong>
+    pontos
+    <br><br>
+
+    Time 2:
+    <strong>${pontos2}</strong>
+    pontos
+  `;
+
+  if(pontos1 > pontos2){
+
+    vencedorEl.textContent =
+      "🏆 Vencedor: Time 1";
+
+  }else if(pontos2 > pontos1){
+
+    vencedorEl.textContent =
+      "🏆 Vencedor: Time 2";
+
+  }else{
+
+    vencedorEl.textContent =
+      "🤝 Empate!";
+
+  }
+
+}
+
+/* =========================
+   REINICIAR
+========================= */
+
+function reiniciarJogo(){
+
+  perguntaAtual = 0;
+
+  pontos1 = 0;
+
+  pontos2 = 0;
+
+  pontos1El.textContent = "0";
+
+  pontos2El.textContent = "0";
+
+  telaJogo.classList.remove("oculto");
+
+  botoesTimes.classList.remove("oculto");
+
+  areaJuiz.classList.remove("oculto");
+
+  telaFinal.style.display = "none";
+
+  carregarPergunta();
+
+}
+
+/* =========================
+   TECLAS
+========================= */
+
+document.addEventListener("keydown",function(event){
+
+  const tecla = event.key.toLowerCase();
+
+  if(tecla === "a") apertou(1);
+
+  if(tecla === "l") apertou(2);
+
+  if(tecla === "c") julgar(true);
+
+  if(tecla === "e") julgar(false);
+
+  if(event.code === "Space"){
+
+    event.preventDefault();
+
+    proximaPergunta();
+
+  }
+
+});
+
+/* =========================
+   FULLSCREEN
+========================= */
+
+window.onload = () => {
+
+  carregarPergunta();
+
+  document.documentElement.requestFullscreen?.();
+
+};
+
+</script>
+
+</body>
+</html>
