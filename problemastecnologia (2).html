@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Quiz da Tecnologia — Problemas</title>
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body{ width:100%; height:100%; overflow:hidden; touch-action:manipulation; }
+body{
+  font-family:"Segoe UI",Arial,sans-serif;
+  background: linear-gradient(160deg,#7f1d1d 0%,#020617 55%);
+  color:white;
+}
+
+/* ── CONTAINER ── */
+.container{
+  width:100vw; height:100vh;
+  padding:1vh 1.2vw;
+  display:grid;
+  grid-template-rows: auto auto 1fr auto auto auto;
+  gap:.8vh;
+}
+
+/* ── TOPO ── */
+.topo{ display:flex; justify-content:space-between; align-items:center; }
+.titulo{
+  font-size:clamp(22px,2.2vw,50px);
+  font-weight:900; text-transform:uppercase; letter-spacing:2px;
+  color:#fecaca;
+  text-shadow:0 0 12px rgba(239,68,68,0.5);
+}
+.rodada{
+  font-size:clamp(16px,1.2vw,28px);
+  padding:.6vh 1.2vw; border-radius:999px;
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.18);
+}
+
+/* ── PLACAR ── */
+.placar{ display:grid; grid-template-columns:1fr 1fr; gap:1vw; }
+.time{
+  padding:.8vh; border-radius:20px; text-align:center;
+  font-weight:900; font-size:clamp(20px,1.8vw,38px);
+  border:2px solid rgba(255,255,255,0.15);
+  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+}
+.time1{ background:linear-gradient(135deg,#2563eb,#1d4ed8); }
+.time2{ background:linear-gradient(135deg,#f97316,#c2410c); }
+.time span{ font-size:clamp(30px,2.8vw,64px); margin-left:10px; }
+
+/* ── CARD PERGUNTA ── */
+.card-pergunta{
+  width:100%; height:100%;
+  border-radius:28px;
+  background:rgba(60,10,10,0.92);
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow:0 12px 40px rgba(0,0,0,0.4);
+  display:flex; flex-direction:column;
+  justify-content:center; align-items:center;
+  text-align:center; padding:2vh 2vw;
+  position:relative;
+}
+.bloco{
+  color:#fca5a5; text-transform:uppercase;
+  letter-spacing:2px; font-weight:900;
+  margin-bottom:1.5vh; font-size:clamp(16px,1.3vw,30px);
+}
+.pergunta{
+  width:95%; font-size:clamp(28px,2.8vw,72px);
+  font-weight:900; line-height:1.18;
+  text-shadow:0 3px 8px rgba(0,0,0,0.3);
+}
+.status{
+  margin-top:1.8vh; min-height:4vh; color:#fecaca;
+  font-weight:900; font-size:clamp(18px,1.6vw,38px);
+}
+
+/* ── BOTÃO GABARITO ── */
+.btn-gabarito-wrap{ position:absolute; bottom:14px; right:18px; }
+.btn-gabarito{
+  background:rgba(255,215,0,0.18);
+  border:1.5px solid rgba(255,215,0,0.5);
+  color:#fde68a; border-radius:12px;
+  font-size:clamp(13px,1vw,20px); font-weight:700;
+  padding:.5vh 1vw; cursor:pointer;
+  transition:background .15s; touch-action:manipulation;
+}
+.btn-gabarito:hover{ background:rgba(255,215,0,0.3); }
+
+/* ── MODAL GABARITO ── */
+.modal-overlay{
+  display:none; position:fixed; inset:0; z-index:100;
+  background:rgba(0,0,0,0.75);
+  align-items:center; justify-content:center;
+}
+.modal-overlay.aberto{ display:flex; }
+.modal{
+  background:#200a0a;
+  border:2px solid rgba(239,68,68,0.4);
+  border-radius:24px; padding:3vh 3vw;
+  max-width:min(860px,88vw); width:100%;
+  box-shadow:0 24px 60px rgba(0,0,0,0.6);
+}
+.modal h2{
+  color:#fca5a5; font-size:clamp(20px,1.8vw,38px);
+  font-weight:900; margin-bottom:2vh;
+  text-align:center; letter-spacing:1px;
+}
+.modal-pergunta-ref{
+  color:#fecaca; font-size:clamp(14px,1.2vw,24px);
+  font-style:italic; text-align:center;
+  margin-bottom:2vh; opacity:.85;
+}
+.respostas-lista{ display:flex; flex-direction:column; gap:1.2vh; margin-bottom:2.5vh; }
+.resp-item{
+  display:flex; align-items:flex-start; gap:.8vw;
+  background:rgba(255,255,255,0.07);
+  border-radius:14px; padding:1.2vh 1.4vw;
+  font-size:clamp(14px,1.2vw,24px); line-height:1.4;
+}
+.resp-num{
+  background:#ef4444; color:#fff; border-radius:50%;
+  width:28px; height:28px; display:flex;
+  align-items:center; justify-content:center;
+  font-weight:900; font-size:14px; flex-shrink:0; margin-top:2px;
+}
+.modal-fechar{
+  display:block; width:100%;
+  background:linear-gradient(135deg,#ef4444,#991b1b);
+  border:none; color:white; border-radius:14px;
+  font-size:clamp(16px,1.3vw,28px); font-weight:900;
+  padding:1.2vh; cursor:pointer; touch-action:manipulation;
+}
+.modal-fechar:active{ transform:scale(.98); }
+
+/* ── BOTÕES DOS TIMES ── */
+.botoes-times{ display:grid; grid-template-columns:1fr 1fr; gap:1vw; height:100%; }
+
+button{
+  border:none; color:white; cursor:pointer;
+  border-radius:24px; font-weight:900;
+  transition:transform .1s;
+  touch-action:manipulation;
+  will-change:transform;
+}
+button:active{ transform:scale(0.96); }
+button:disabled{ opacity:.4; cursor:not-allowed; }
+
+.botao-resposta{
+  display:flex; flex-direction:column;
+  justify-content:center; align-items:center;
+  border:4px solid rgba(255,255,255,0.75);
+  box-shadow:0 10px 28px rgba(0,0,0,0.4);
+}
+.btn-time1{ background:linear-gradient(135deg,#3b82f6,#1d4ed8); }
+.btn-time2{ background:linear-gradient(135deg,#fb923c,#ea580c); }
+.nome-time{ font-size:clamp(24px,1.8vw,44px); }
+.aperte-aqui{
+  font-size:clamp(42px,3.8vw,108px); line-height:1;
+  margin-top:.8vh; text-shadow:0 3px 8px rgba(0,0,0,0.35);
+}
+.subtexto{ margin-top:.8vh; font-size:clamp(16px,1.1vw,28px); }
+
+.botao-vencedor-azul{ animation:brilhoAzul .6s infinite alternate; }
+.botao-vencedor-laranja{ animation:brilhoLaranja .6s infinite alternate; }
+@keyframes brilhoAzul{
+  from{ box-shadow:0 0 16px #60a5fa; }
+  to  { box-shadow:0 0 50px #3b82f6, 0 0 80px #1d4ed8; }
+}
+@keyframes brilhoLaranja{
+  from{ box-shadow:0 0 16px #fdba74; }
+  to  { box-shadow:0 0 50px #fb923c, 0 0 80px #ea580c; }
+}
+
+/* ── ÁREA JUIZ ── */
+.area-juiz{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:1vw; height:8vh; }
+.area-juiz button{ font-size:clamp(16px,1.3vw,30px); box-shadow:0 6px 18px rgba(0,0,0,0.3); }
+.correta { background:linear-gradient(135deg,#22c55e,#15803d); }
+.errada  { background:linear-gradient(135deg,#ef4444,#991b1b); }
+.proxima { background:linear-gradient(135deg,#64748b,#334155); }
+
+/* ── FINAL ── */
+.final{
+  display:none; flex:1; border-radius:28px;
+  background:rgba(40,5,5,0.95);
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow:0 16px 48px rgba(0,0,0,0.4);
+  justify-content:center; align-items:center;
+  flex-direction:column; text-align:center; padding:3vh 3vw;
+}
+.final h1{ font-size:clamp(44px,4.5vw,100px); }
+.vencedor{
+  margin:2vh 0; color:#fde68a; font-weight:900;
+  text-shadow:0 0 18px rgba(255,255,255,0.25);
+  font-size:clamp(36px,3.5vw,80px);
+}
+.resultado-final{ line-height:1.4; font-size:clamp(24px,1.8vw,50px); }
+.reiniciar{
+  margin-top:3vh; padding:1.4vh 2vw;
+  background:linear-gradient(135deg,#6366f1,#4338ca);
+  font-size:clamp(20px,1.4vw,34px);
+}
+.oculto{ display:none !important; }
+.dica{ text-align:center; opacity:.5; font-size:clamp(11px,0.75vw,18px); }
+</style>
+</head>
+<body>
+
+<!-- MODAL GABARITO -->
+<div class="modal-overlay" id="modalGabarito" onclick="fecharGabarito(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2>💡 Possibilidades de Resposta</h2>
+    <div class="modal-pergunta-ref" id="modalPerguntaRef"></div>
+    <div class="respostas-lista" id="modalRespostas"></div>
+    <button class="modal-fechar" onclick="fecharGabarito()">Fechar</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TOPO -->
+  <div class="topo">
+    <div class="titulo">Quiz da Tecnologia — Problemas</div>
+    <div class="rodada" id="rodada">Pergunta 1 de 7</div>
+  </div>
+
+  <!-- PLACAR -->
+  <div class="placar">
+    <div class="time time1">Time 1 <span id="pontos1">0</span></div>
+    <div class="time time2">Time 2 <span id="pontos2">0</span></div>
+  </div>
+
+  <!-- CARD PERGUNTA -->
+  <div class="card-pergunta" id="telaJogo">
+    <div class="bloco">Tecnologia como problema</div>
+    <div class="pergunta" id="pergunta"></div>
+    <div class="status" id="status">Quem apertar primeiro responde.</div>
+    <div class="btn-gabarito-wrap">
+      <button class="btn-gabarito" onclick="abrirGabarito()">
+        💡 Ver possibilidades de resposta
+      </button>
+    </div>
+  </div>
+
+  <!-- FINAL -->
+  <div class="final" id="telaFinal">
+    <h1>Fim do jogo!</h1>
+    <div class="vencedor" id="vencedor"></div>
+    <div class="resultado-final" id="resultadoFinal"></div>
+    <button class="reiniciar" onclick="reiniciarJogo()">🔄 Jogar novamente</button>
+  </div>
+
+  <!-- BOTÕES DOS TIMES -->
+  <div class="botoes-times" id="botoesTimes">
+    <button class="btn-time1 botao-resposta" id="botao1"
+      onclick="apertou(1)" ontouchstart="apertou(1)">
+      <div class="nome-time">Time 1</div>
+      <div class="aperte-aqui">APERTE!</div>
+      <div class="subtexto">Lado esquerdo</div>
+    </button>
+    <button class="btn-time2 botao-resposta" id="botao2"
+      onclick="apertou(2)" ontouchstart="apertou(2)">
+      <div class="nome-time">Time 2</div>
+      <div class="aperte-aqui">APERTE!</div>
+      <div class="subtexto">Lado direito</div>
+    </button>
+  </div>
+
+  <!-- ÁREA JUIZ -->
+  <div class="area-juiz" id="areaJuiz">
+    <button class="correta" id="btnCorreta" onclick="julgar(true)" disabled>✅ Correta</button>
+    <button class="errada"  id="btnErrada"  onclick="julgar(false)" disabled>❌ Errada</button>
+    <button class="proxima" id="btnProxima" onclick="proximaPergunta()" disabled>➡ Próxima</button>
+  </div>
+
+  <div class="dica">
+    Atalhos: Time 1 = A | Time 2 = L | Correta = C | Errada = E | Próxima = Espaço | Gabarito = G
+  </div>
+
+</div>
+
+<script>
+
+/* ── PERGUNTAS ── */
+const perguntas = [
+  "Dê um exemplo de como a tecnologia pode aumentar desigualdades.",
+  "Cite um exemplo de como a tecnologia pode prejudicar atenção e foco.",
+  "Dê um exemplo de como a tecnologia pode afetar saúde mental e bem-estar.",
+  "Cite um exemplo de como a tecnologia pode espalhar desinformação.",
+  "Dê um exemplo de como a tecnologia pode ameaçar privacidade e segurança.",
+  "Cite um exemplo de dependência excessiva de sistemas automatizados.",
+  "Dê um exemplo de como a tecnologia pode enfraquecer relações humanas."
+];
+
+/* ── GABARITOS ── */
+const gabaritos = [
+  [
+    "Quem não tem acesso à internet ou computador fica excluído de serviços essenciais e oportunidades de emprego",
+    "Algoritmos de crédito e contratação podem discriminar pessoas de baixa renda ou de certas regiões",
+    "Crianças sem acesso a dispositivos ficam em desvantagem educacional em relação às demais",
+    "A automação elimina empregos de trabalhadores menos qualificados, sem requalificação suficiente"
+  ],
+  [
+    "Notificações constantes de aplicativos interrompem tarefas e dificultam a concentração prolongada",
+    "Redes sociais são projetadas para viciar — rolagem infinita impede que paremos de usar",
+    "Crianças com telas no quarto dormem menos e têm pior desempenho escolar",
+    "Multitarefa digital reduz a qualidade do trabalho — o cérebro não consegue fazer duas coisas ao mesmo tempo"
+  ],
+  [
+    "Comparação constante nas redes sociais aumenta ansiedade, insegurança e depressão especialmente em adolescentes",
+    "Cyberbullying causa danos psicológicos graves — o assédio não para quando a vítima sai da escola",
+    "FOMO (medo de perder algo) gerado pelas redes sociais cria estresse e insatisfação crônica",
+    "Jogos online com recompensas variáveis criam dependência similar ao vício em apostas"
+  ],
+  [
+    "Fake news e deepfakes se espalham muito mais rápido que a verdade nas redes sociais",
+    "Algoritmos criam bolhas de informação — só vemos o que confirma nossas crenças",
+    "Grupos de WhatsApp propagam desinformação médica que leva pessoas a recusar vacinas ou tratamentos corretos",
+    "Conteúdo gerado por IA pode criar notícias falsas convincentes em escala industrial"
+  ],
+  [
+    "Aplicativos coletam dados de localização, hábitos e conversas sem o usuário perceber",
+    "Vazamentos de dados expõem senhas, cartões e documentos de milhões de pessoas",
+    "Câmeras de reconhecimento facial permitem vigilância em massa pela governos e empresas",
+    "Golpes de phishing enganam usuários a entregar dados bancários e senhas por e-mail ou WhatsApp"
+  ],
+  [
+    "GPS fez as pessoas perderem a capacidade de se orientar espacialmente sem ajuda tecnológica",
+    "Calculadoras no celular prejudicaram o cálculo mental básico em crianças e adultos",
+    "Dependência de plataformas de nuvem: quando o sistema cai, hospitais, bancos e governos param",
+    "Pilotos automáticos reduzem a habilidade de pilotar manualmente em situações de emergência"
+  ],
+  [
+    "Pessoas passam mais tempo olhando para telas do que conversando com quem está ao lado",
+    "Relacionamentos superficiais nas redes sociais substituem amizades profundas e presenciais",
+    "Famílias jantam juntas olhando cada uma para seu celular, sem conversar",
+    "Crianças perdem habilidades sociais ao interagir mais com telas do que com outras crianças"
+  ]
+];
+
+/* ── ESTADO ── */
+let perguntaAtual = 0;
+let pontos1 = 0, pontos2 = 0;
+let primeiroTime = null;
+let perguntaJulgada = false;
+let timerResposta = null;
+
+/* ── ELEMENTOS ── */
+const perguntaEl       = document.getElementById("pergunta");
+const rodadaEl         = document.getElementById("rodada");
+const statusEl         = document.getElementById("status");
+const pontos1El        = document.getElementById("pontos1");
+const pontos2El        = document.getElementById("pontos2");
+const botao1           = document.getElementById("botao1");
+const botao2           = document.getElementById("botao2");
+const btnCorreta       = document.getElementById("btnCorreta");
+const btnErrada        = document.getElementById("btnErrada");
+const btnProxima       = document.getElementById("btnProxima");
+const telaJogo         = document.getElementById("telaJogo");
+const telaFinal        = document.getElementById("telaFinal");
+const botoesTimes      = document.getElementById("botoesTimes");
+const areaJuiz         = document.getElementById("areaJuiz");
+const vencedorEl       = document.getElementById("vencedor");
+const resultadoFinalEl = document.getElementById("resultadoFinal");
+const modalGabarito    = document.getElementById("modalGabarito");
+const modalRespostas   = document.getElementById("modalRespostas");
+const modalPergRef     = document.getElementById("modalPerguntaRef");
+
+/* ── SOM ── */
+function tocarSom(f0,f1,dur,tipo="square"){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator(), gain=ctx.createGain();
+    osc.type=tipo;
+    osc.frequency.setValueAtTime(f0,ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(f1,ctx.currentTime+dur);
+    gain.gain.setValueAtTime(0.22,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime+dur);
+  }catch(e){}
+}
+const somBotao     = () => tocarSom(240,90,0.25);
+const somResponder = () => tocarSom(900,500,0.45);
+const somErrado    = () => tocarSom(180,80,0.38,"sawtooth");
+function somCorreto(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [523,659,784].forEach((f,i)=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.type="sine";
+      o.frequency.setValueAtTime(f,ctx.currentTime+i*0.12);
+      g.gain.setValueAtTime(0.2,ctx.currentTime+i*0.12);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+i*0.12+0.18);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(ctx.currentTime+i*0.12); o.stop(ctx.currentTime+i*0.12+0.18);
+    });
+  }catch(e){}
+}
+
+/* ── GABARITO ── */
+function abrirGabarito(){
+  modalPergRef.textContent = '"' + perguntas[perguntaAtual] + '"';
+  modalRespostas.innerHTML = gabaritos[perguntaAtual].map((r,i)=>
+    `<div class="resp-item">
+       <div class="resp-num">${i+1}</div>
+       <div>${r}</div>
+     </div>`
+  ).join('');
+  modalGabarito.classList.add('aberto');
+}
+function fecharGabarito(e){
+  if(!e || e.target===modalGabarito)
+    modalGabarito.classList.remove('aberto');
+}
+
+/* ── CARREGAR PERGUNTA ── */
+function carregarPergunta(){
+  perguntaEl.textContent  = perguntas[perguntaAtual];
+  rodadaEl.textContent    = `Pergunta ${perguntaAtual+1} de ${perguntas.length}`;
+  statusEl.textContent    = "Quem apertar primeiro responde.";
+  primeiroTime   = null;
+  perguntaJulgada = false;
+  if(timerResposta){ clearInterval(timerResposta); timerResposta=null; }
+  botao1.disabled = false;
+  botao2.disabled = false;
+  botao1.classList.remove("botao-vencedor-azul");
+  botao2.classList.remove("botao-vencedor-laranja");
+  btnCorreta.disabled = true;
+  btnErrada.disabled  = true;
+  btnProxima.disabled = true;
+}
+
+/* ── APERTOU — debounce evita duplo disparo touch+click ── */
+let ultimoToque = 0;
+function apertou(time){
+  const agora = Date.now();
+  if(agora - ultimoToque < 300) return;
+  ultimoToque = agora;
+  if(primeiroTime !== null || perguntaJulgada) return;
+  primeiroTime = time;
+  somBotao();
+  botao1.disabled = true;
+  botao2.disabled = true;
+  if(time===1){
+    botao1.disabled = false;
+    botao1.classList.add("botao-vencedor-azul");
+  } else {
+    botao2.disabled = false;
+    botao2.classList.add("botao-vencedor-laranja");
+  }
+  btnCorreta.disabled = false;
+  btnErrada.disabled  = false;
+  let segundos = 3;
+  statusEl.textContent = `Time ${time} apertou primeiro! Começa em ${segundos}...`;
+  timerResposta = setInterval(()=>{
+    segundos--;
+    if(segundos>0){
+      statusEl.textContent = `Time ${time}, começa em ${segundos}...`;
+    } else {
+      clearInterval(timerResposta); timerResposta=null;
+      somResponder();
+      statusEl.textContent = `RESPONDA AGORA, Time ${time}!`;
+    }
+  },1000);
+}
+
+/* ── JULGAR ── */
+function julgar(correta){
+  if(primeiroTime===null || perguntaJulgada) return;
+  if(timerResposta){ clearInterval(timerResposta); timerResposta=null; }
+  let timePontuou;
+  if(correta){
+    somCorreto();
+    timePontuou = primeiroTime;
+    statusEl.textContent = `✅ Resposta correta! Ponto para o Time ${timePontuou}.`;
+  } else {
+    somErrado();
+    timePontuou = primeiroTime===1 ? 2 : 1;
+    statusEl.textContent = `❌ Errado! Ponto para o Time ${timePontuou}.`;
+  }
+  if(timePontuou===1){ pontos1++; pontos1El.textContent=pontos1; }
+  else               { pontos2++; pontos2El.textContent=pontos2; }
+  perguntaJulgada    = true;
+  btnCorreta.disabled = true;
+  btnErrada.disabled  = true;
+  btnProxima.disabled = false;
+}
+
+/* ── PRÓXIMA ── */
+function proximaPergunta(){
+  if(!perguntaJulgada) return;
+  perguntaAtual++;
+  if(perguntaAtual >= perguntas.length) finalizarJogo();
+  else carregarPergunta();
+}
+
+/* ── FINALIZAR ── */
+function finalizarJogo(){
+  telaJogo.classList.add("oculto");
+  botoesTimes.classList.add("oculto");
+  areaJuiz.classList.add("oculto");
+  telaFinal.style.display = "flex";
+  rodadaEl.textContent = "Resultado Final";
+  resultadoFinalEl.innerHTML =
+    `Time 1: <strong>${pontos1}</strong> pontos<br><br>Time 2: <strong>${pontos2}</strong> pontos`;
+  vencedorEl.textContent =
+    pontos1>pontos2 ? "🏆 Vencedor: Time 1" :
+    pontos2>pontos1 ? "🏆 Vencedor: Time 2" : "🤝 Empate!";
+}
+
+/* ── REINICIAR ── */
+function reiniciarJogo(){
+  perguntaAtual=0; pontos1=0; pontos2=0;
+  pontos1El.textContent="0"; pontos2El.textContent="0";
+  telaJogo.classList.remove("oculto");
+  botoesTimes.classList.remove("oculto");
+  areaJuiz.classList.remove("oculto");
+  telaFinal.style.display="none";
+  carregarPergunta();
+}
+
+/* ── TECLADO ── */
+document.addEventListener("keydown",e=>{
+  const k=e.key.toLowerCase();
+  if(k==="a") apertou(1);
+  if(k==="l") apertou(2);
+  if(k==="c") julgar(true);
+  if(k==="e") julgar(false);
+  if(k==="g") abrirGabarito();
+  if(e.code==="Space"){ e.preventDefault(); proximaPergunta(); }
+  if(k==="escape") fecharGabarito();
+});
+
+/* ── INIT ── */
+window.onload = () => {
+  carregarPergunta();
+  document.documentElement.requestFullscreen?.();
+};
+</script>
+</body>
+</html>
