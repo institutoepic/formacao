@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Votação da Turma</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { width:100%; height:100%; overflow:hidden; touch-action:manipulation; }
+body { font-family:'Nunito',sans-serif; background:#0F1923; color:#fff; min-height:100vh; }
+
+/* ── TELAS ── */
+.tela {
+  position:fixed; inset:0;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:3vh 3vw; gap:2vh;
+  transition:opacity .3s, transform .3s;
+}
+.tela.oculta { opacity:0; pointer-events:none; transform:scale(.97); }
+
+/* ═══════════════════════════
+   TELA 1 — PROFESSOR
+═══════════════════════════ */
+#tela-prof { background:#0F1923; }
+
+.titulo-app {
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(2rem,5vw,3.2rem);
+  text-align:center;
+  background:linear-gradient(135deg,#60A5FA,#34D399,#FBBF24);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 14px rgba(96,165,250,.35));
+}
+
+.card-setup {
+  background:#1E293B;
+  border:1.5px solid rgba(255,255,255,.08);
+  border-radius:28px; padding:3vh 3vw;
+  width:min(680px,94vw);
+  display:flex; flex-direction:column; gap:2vh;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  overflow-y:auto; max-height:82vh;
+}
+
+.campo-label {
+  font-size:clamp(.75rem,1.3vw,.95rem);
+  font-weight:800; text-transform:uppercase;
+  letter-spacing:.12em; margin-bottom:.5vh;
+}
+.cl-azul    { color:#60A5FA; }
+.cl-verde   { color:#34D399; }
+.cl-amarelo { color:#FBBF24; }
+
+.input-perg {
+  width:100%; background:rgba(255,255,255,.06);
+  border:2px solid rgba(255,255,255,.12);
+  border-radius:16px; padding:1.4vh 1.4vw;
+  font-family:'Nunito',sans-serif;
+  font-size:clamp(1.1rem,2.2vw,1.5rem);
+  font-weight:700; color:#fff;
+  resize:none; outline:none; min-height:86px;
+  transition:border-color .2s;
+}
+.input-perg::placeholder { color:rgba(255,255,255,.22); }
+.input-perg:focus { border-color:#60A5FA; }
+
+/* Presets */
+.presets-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:.7vh .7vw;
+}
+.preset-btn {
+  border:1.5px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.07);
+  border-radius:12px; padding:1vh .5vw;
+  font-family:'Nunito',sans-serif; font-weight:800;
+  font-size:clamp(.78rem,1.2vw,.95rem);
+  color:rgba(255,255,255,.65); cursor:pointer;
+  touch-action:manipulation; transition:all .15s;
+  text-align:center; line-height:1.3;
+}
+.preset-btn:hover { background:rgba(255,255,255,.14); color:#fff; transform:scale(1.03); }
+.preset-btn.ativo { background:rgba(96,165,250,.2); border-color:#60A5FA; color:#60A5FA; }
+
+.divisor {
+  display:flex; align-items:center; gap:1vw;
+  font-size:.78rem; color:rgba(255,255,255,.25); font-weight:700;
+}
+.divisor::before,.divisor::after {
+  content:''; flex:1; height:1px; background:rgba(255,255,255,.08);
+}
+
+/* Respostas */
+.respostas-lista { display:flex; flex-direction:column; gap:.7vh; }
+.resp-row {
+  display:flex; align-items:center; gap:.6vw;
+}
+.resp-emoji {
+  width:54px; border-radius:12px; padding:.7vh .4vw;
+  background:rgba(255,255,255,.07); border:1.5px solid rgba(255,255,255,.1);
+  font-size:1.3rem; text-align:center; color:#fff;
+  font-family:'Nunito',sans-serif; font-weight:700; outline:none;
+  transition:border-color .2s;
+}
+.resp-emoji:focus { border-color:#34D399; }
+.resp-texto {
+  flex:1; border-radius:12px; padding:.7vh .8vw;
+  background:rgba(255,255,255,.07); border:1.5px solid rgba(255,255,255,.1);
+  font-size:clamp(.95rem,1.6vw,1.15rem);
+  font-family:'Nunito',sans-serif; font-weight:700; color:#fff; outline:none;
+  transition:border-color .2s;
+}
+.resp-texto:focus { border-color:#34D399; }
+.resp-cor {
+  width:38px; height:38px; border-radius:10px;
+  border:none; cursor:pointer; flex-shrink:0; padding:0;
+}
+.resp-del {
+  background:rgba(239,68,68,.18); border:1.5px solid rgba(239,68,68,.3);
+  border-radius:10px; width:36px; height:36px; color:#EF4444;
+  font-size:1rem; cursor:pointer; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  touch-action:manipulation;
+}
+.resp-del:hover { background:rgba(239,68,68,.35); }
+.btn-add {
+  width:100%; border:1.5px dashed rgba(52,211,153,.35);
+  background:rgba(52,211,153,.07); border-radius:12px;
+  padding:.8vh; color:#34D399;
+  font-family:'Nunito',sans-serif; font-weight:800;
+  font-size:clamp(.85rem,1.3vw,1rem);
+  cursor:pointer; touch-action:manipulation; transition:all .15s;
+}
+.btn-add:hover { background:rgba(52,211,153,.15); }
+
+.btn-iniciar {
+  border:none; border-radius:999px; padding:1.6vh 4vw;
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(1.3rem,2.5vw,1.9rem);
+  background:linear-gradient(135deg,#60A5FA,#34D399);
+  color:#0F1923; cursor:pointer;
+  box-shadow:0 0 28px rgba(96,165,250,.4);
+  transition:transform .15s; touch-action:manipulation;
+}
+.btn-iniciar:hover { transform:scale(1.04); }
+.btn-iniciar:active { transform:scale(.97); }
+
+/* ═══════════════════════════
+   TELA 2 — VOTAÇÃO
+═══════════════════════════ */
+#tela-votacao {
+  background:#0F1923;
+  justify-content:flex-start;
+  padding:1.5vh 2vw; gap:1.2vh;
+}
+
+.perg-box {
+  width:100%; max-width:1200px;
+  background:#1E293B;
+  border:1.5px solid rgba(255,255,255,.1);
+  border-radius:22px; padding:2vh 2.5vw;
+  text-align:center; position:relative;
+  box-shadow:0 8px 28px rgba(0,0,0,.3);
+}
+.perg-label {
+  font-size:clamp(.65rem,1vw,.85rem); font-weight:800;
+  color:#60A5FA; text-transform:uppercase; letter-spacing:.15em; margin-bottom:.6vh;
+}
+.perg-texto {
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(1.8rem,4.5vw,4.5rem); line-height:1.15;
+  text-shadow:0 3px 10px rgba(0,0,0,.3);
+}
+.btn-editar {
+  position:absolute; top:10px; right:12px;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14);
+  border-radius:10px; padding:.4vh .7vw;
+  color:rgba(255,255,255,.4); font-size:clamp(.65rem,.85vw,.82rem);
+  font-weight:800; cursor:pointer; font-family:'Nunito',sans-serif;
+  touch-action:manipulation; transition:all .15s;
+}
+.btn-editar:hover { color:#fff; background:rgba(255,255,255,.16); }
+
+.total-txt {
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(.85rem,1.5vw,1.2rem);
+  color:rgba(255,255,255,.4);
+}
+.total-txt span { color:#FBBF24; }
+
+.votos-grid {
+  flex:1; width:100%; max-width:1200px;
+  display:grid; gap:1.5vw;
+}
+
+.btn-voto {
+  border:none; border-radius:26px; cursor:pointer;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:.8vh; padding:2vh 1.5vw;
+  font-family:'Fredoka One',cursive;
+  border:4px solid rgba(255,255,255,.65);
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  transition:transform .1s;
+  touch-action:manipulation; will-change:transform;
+  overflow:hidden; position:relative;
+}
+.btn-voto:active { transform:scale(.93); }
+.v-emoji { font-size:clamp(3rem,7vw,7rem); line-height:1; }
+.v-texto {
+  font-size:clamp(1.5rem,3.5vw,3.5rem); color:#fff;
+  text-shadow:0 3px 8px rgba(0,0,0,.4); line-height:1;
+}
+.v-num {
+  font-size:clamp(2rem,5vw,5.5rem); color:#fff;
+  text-shadow:0 4px 12px rgba(0,0,0,.4);
+  background:rgba(0,0,0,.2); border-radius:999px;
+  padding:.1vh 1.5vw; min-width:80px; text-align:center;
+}
+@keyframes pulsou { 0%{transform:scale(1)} 45%{transform:scale(1.07)} 100%{transform:scale(1)} }
+.btn-voto.pulse { animation:pulsou .28s ease; }
+
+.part {
+  position:fixed; border-radius:50%; pointer-events:none; z-index:999;
+  animation:partAnim .65s ease forwards;
+}
+@keyframes partAnim {
+  0%   { transform:translate(0,0) scale(1); opacity:1; }
+  100% { transform:translate(var(--dx),var(--dy)) scale(0); opacity:0; }
+}
+
+.acoes {
+  display:flex; gap:1.2vw; width:100%; max-width:1200px;
+}
+.btn-ac {
+  border:none; border-radius:14px; padding:1.1vh 2vw;
+  font-family:'Nunito',sans-serif; font-weight:900;
+  font-size:clamp(.8rem,1.3vw,1rem);
+  cursor:pointer; touch-action:manipulation; transition:transform .15s;
+  box-shadow:0 4px 14px rgba(0,0,0,.3);
+}
+.btn-ac:active { transform:scale(.95); }
+.ac-voltar { background:rgba(255,255,255,.09); border:1.5px solid rgba(255,255,255,.14); color:rgba(255,255,255,.55); flex:1; }
+.ac-zerar  { background:rgba(239,68,68,.18); border:1.5px solid rgba(239,68,68,.3); color:#EF4444; flex:1; }
+.ac-result { background:linear-gradient(135deg,#FBBF24,#F59E0B); color:#0F1923; flex:2; font-size:clamp(.9rem,1.5vw,1.1rem); }
+
+/* ═══════════════════════════
+   TELA 3 — RESULTADO
+═══════════════════════════ */
+#tela-resultado {
+  background:#0F1923;
+  justify-content:flex-start;
+  padding:2vh 2vw; gap:2vh;
+}
+.res-titulo {
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(1.5rem,3.5vw,3rem); text-align:center;
+  background:linear-gradient(135deg,#FBBF24,#FB923C);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.res-perg {
+  font-size:clamp(.9rem,1.8vw,1.3rem);
+  color:rgba(255,255,255,.45); text-align:center;
+  font-style:italic; max-width:900px;
+}
+.res-barras {
+  flex:1; width:100%; max-width:1000px;
+  display:flex; flex-direction:column; gap:2vh; justify-content:center;
+}
+.res-item { display:flex; align-items:center; gap:1.5vw; }
+.ri-emoji { font-size:clamp(1.8rem,3.5vw,3rem); width:55px; text-align:center; flex-shrink:0; }
+.ri-label {
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(.95rem,1.8vw,1.5rem);
+  min-width:clamp(70px,12vw,140px); flex-shrink:0;
+  display:flex; align-items:center; gap:.4vw;
+}
+.tag-venc {
+  font-family:'Nunito',sans-serif; font-size:.65rem; font-weight:900;
+  text-transform:uppercase; background:#FBBF24; color:#0F1923;
+  border-radius:999px; padding:.1vh .4vw;
+}
+.ri-bg { flex:1; height:clamp(44px,7vh,80px); border-radius:999px; background:rgba(255,255,255,.07); overflow:hidden; }
+.ri-fill {
+  height:100%; border-radius:999px; width:0%;
+  transition:width 1s cubic-bezier(.22,1,.36,1);
+  display:flex; align-items:center; justify-content:flex-end; padding-right:16px;
+}
+.ri-num {
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(1rem,2vw,1.7rem); color:#fff;
+  text-shadow:0 2px 6px rgba(0,0,0,.5); white-space:nowrap;
+}
+.ri-pct {
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(.95rem,1.8vw,1.4rem);
+  color:rgba(255,255,255,.4); min-width:62px; text-align:right; flex-shrink:0;
+}
+.res-total { font-family:'Fredoka One',cursive; font-size:clamp(.9rem,1.6vw,1.3rem); color:rgba(255,255,255,.4); text-align:center; }
+.res-total span { color:#FBBF24; }
+.res-acoes { display:flex; gap:1.5vw; }
+
+@media(max-width:600px){
+  .presets-grid { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TELA 1 — PROFESSOR ═══ -->
+<div class="tela" id="tela-prof">
+  <div class="titulo-app">🌈 Votação da Turma</div>
+  <div class="card-setup">
+
+    <div>
+      <div class="campo-label cl-azul">✏️ Qual é a pergunta?</div>
+      <textarea class="input-perg" id="input-perg"
+        placeholder="Ex: Você gosta de brócolis?&#10;Ex: Qual fruta você mais gosta?"
+        rows="3" maxlength="140"></textarea>
+    </div>
+
+    <div>
+      <div class="campo-label cl-verde">⚡ Modelo rápido de respostas</div>
+      <div class="presets-grid" id="presets-grid"></div>
+    </div>
+
+    <div class="divisor">ou monte as respostas do seu jeito</div>
+
+    <div>
+      <div class="campo-label cl-amarelo">🎯 Respostas</div>
+      <div class="respostas-lista" id="respostas-lista"></div>
+      <button class="btn-add" style="margin-top:.7vh" onclick="addResp()">+ Adicionar resposta</button>
+    </div>
+
+    <button class="btn-iniciar" onclick="iniciar()">🚀 Começar Votação!</button>
+  </div>
+</div>
+
+<!-- ═══ TELA 2 — VOTAÇÃO ═══ -->
+<div class="tela oculta" id="tela-votacao">
+  <div class="perg-box">
+    <div class="perg-label">❓ Pergunta da turma</div>
+    <div class="perg-texto" id="perg-exibida"></div>
+    <button class="btn-editar" onclick="irProf()">✏️ Editar</button>
+  </div>
+  <div class="total-txt">Votos: <span id="total-num">0</span></div>
+  <div class="votos-grid" id="votos-grid"></div>
+  <div class="acoes">
+    <button class="btn-ac ac-voltar"  onclick="irProf()">← Nova pergunta</button>
+    <button class="btn-ac ac-zerar"   onclick="zerarVotos()">🗑 Zerar</button>
+    <button class="btn-ac ac-result"  onclick="verResultado()">📊 Ver resultado</button>
+  </div>
+</div>
+
+<!-- ═══ TELA 3 — RESULTADO ═══ -->
+<div class="tela oculta" id="tela-resultado">
+  <div class="res-titulo">🏆 Resultado</div>
+  <div class="res-perg" id="res-perg-txt"></div>
+  <div class="res-barras" id="res-barras"></div>
+  <div class="res-total">Total: <span id="res-total">0</span> votos</div>
+  <div class="res-acoes">
+    <button class="btn-ac ac-voltar"  onclick="irVotacao()">← Voltar a votar</button>
+    <button class="btn-ac ac-result"  onclick="irProf()">🔄 Nova pergunta</button>
+  </div>
+</div>
+
+<script>
+// ── PRESETS ──────────────────────────────────────────────────────
+const PRESETS = [
+  { nome:'👍 Sim / Não', resps:[
+    {emoji:'😃',texto:'Sim!',  cor:'#22C55E'},
+    {emoji:'😕',texto:'Não!',  cor:'#EF4444'},
+  ]},
+  { nome:'🤔 Sim / Não / Talvez', resps:[
+    {emoji:'😃',texto:'Sim!',   cor:'#22C55E'},
+    {emoji:'😕',texto:'Não!',   cor:'#EF4444'},
+    {emoji:'🤔',texto:'Talvez', cor:'#F59E0B'},
+  ]},
+  { nome:'🍎 Frutas', resps:[
+    {emoji:'🍎',texto:'Maçã',   cor:'#EF4444'},
+    {emoji:'🍌',texto:'Banana', cor:'#EAB308'},
+    {emoji:'🍊',texto:'Laranja',cor:'#F97316'},
+    {emoji:'🍇',texto:'Uva',    cor:'#8B5CF6'},
+  ]},
+  { nome:'🐶 Animais', resps:[
+    {emoji:'🐶',texto:'Cachorro',cor:'#60A5FA'},
+    {emoji:'🐱',texto:'Gato',    cor:'#FB923C'},
+    {emoji:'🐰',texto:'Coelho',  cor:'#F9A8D4'},
+    {emoji:'🐟',texto:'Peixe',   cor:'#38BDF8'},
+  ]},
+  { nome:'😍 O que achei', resps:[
+    {emoji:'😍',texto:'Amei!',   cor:'#EC4899'},
+    {emoji:'😊',texto:'Gostei',  cor:'#22C55E'},
+    {emoji:'😐',texto:'Mais ou menos',cor:'#F59E0B'},
+    {emoji:'😤',texto:'Não gostei',   cor:'#EF4444'},
+  ]},
+  { nome:'🎨 Cores', resps:[
+    {emoji:'🔵',texto:'Azul',     cor:'#3B82F6'},
+    {emoji:'🔴',texto:'Vermelho', cor:'#EF4444'},
+    {emoji:'🟡',texto:'Amarelo',  cor:'#EAB308'},
+    {emoji:'🟢',texto:'Verde',    cor:'#22C55E'},
+  ]},
+];
+
+// ── ESTADO ────────────────────────────────────────────────────────
+let resps = [{emoji:'😃',texto:'Sim!',cor:'#22C55E'},{emoji:'😕',texto:'Não!',cor:'#EF4444'}];
+let votos = [];
+
+// ── PRESETS ───────────────────────────────────────────────────────
+function montarPresets(){
+  const g = document.getElementById('presets-grid');
+  g.innerHTML='';
+  PRESETS.forEach((p,i)=>{
+    const b=document.createElement('button');
+    b.className='preset-btn'+(i===0?' ativo':'');
+    b.textContent=p.nome;
+    b.onclick=()=>{
+      document.querySelectorAll('.preset-btn').forEach(x=>x.classList.remove('ativo'));
+      b.classList.add('ativo');
+      resps = p.resps.map(r=>({...r}));
+      renderResps();
+    };
+    g.appendChild(b);
+  });
+}
+
+// ── RENDER RESPOSTAS ──────────────────────────────────────────────
+function renderResps(){
+  const lista = document.getElementById('respostas-lista');
+  lista.innerHTML='';
+  resps.forEach((r,i)=>{
+    const row=document.createElement('div'); row.className='resp-row';
+    row.innerHTML=`
+      <input class="resp-emoji" type="text" maxlength="2" value="${r.emoji}"
+        oninput="resps[${i}].emoji=this.value"/>
+      <input class="resp-texto" type="text" maxlength="30" value="${r.texto}" placeholder="Resposta..."
+        oninput="resps[${i}].texto=this.value"/>
+      <input class="resp-cor" type="color" value="${r.cor}"
+        oninput="resps[${i}].cor=this.value" title="Cor do botão"/>
+      ${resps.length>1?`<button class="resp-del" onclick="delResp(${i})">✕</button>`:''}
+    `;
+    lista.appendChild(row);
+  });
+}
+
+function addResp(){
+  if(resps.length>=6){alert('Máximo 6 respostas!');return;}
+  const extras=['#60A5FA','#A78BFA','#34D399','#FB923C','#F43F5E','#FBBF24'];
+  resps.push({emoji:'⭐',texto:'Resposta '+(resps.length+1),cor:extras[resps.length%extras.length]});
+  document.querySelectorAll('.preset-btn').forEach(x=>x.classList.remove('ativo'));
+  renderResps();
+}
+function delResp(i){ resps.splice(i,1); renderResps(); }
+
+// ── INICIAR ───────────────────────────────────────────────────────
+function iniciar(){
+  const perg=document.getElementById('input-perg').value.trim();
+  if(!perg){alert('✏️ Escreve a pergunta!');return;}
+  // Captura valores atuais dos inputs
+  document.querySelectorAll('#respostas-lista .resp-emoji').forEach((el,i)=>{ if(resps[i]) resps[i].emoji=el.value||resps[i].emoji; });
+  document.querySelectorAll('#respostas-lista .resp-texto').forEach((el,i)=>{ if(resps[i]) resps[i].texto=el.value||resps[i].texto; });
+
+  votos = resps.map(()=>0);
+  document.getElementById('perg-exibida').textContent=perg;
+
+  const grid=document.getElementById('votos-grid');
+  grid.innerHTML='';
+  const n=resps.length;
+  grid.style.gridTemplateColumns=n<=2?'1fr 1fr':n<=3?'1fr 1fr 1fr':n<=4?'1fr 1fr 1fr 1fr':'repeat(3,1fr)';
+
+  resps.forEach((r,i)=>{
+    const btn=document.createElement('button');
+    btn.className='btn-voto'; btn.id='vbtn-'+i;
+    btn.style.background=r.cor;
+    btn.innerHTML=`<div class="v-emoji">${r.emoji}</div><div class="v-texto">${r.texto}</div><div class="v-num" id="vnum-${i}">0</div>`;
+    let ultimo=0;
+    const votar=(e)=>{
+      e.preventDefault();
+      const now=Date.now(); if(now-ultimo<350)return; ultimo=now;
+      registrar(i,btn);
+    };
+    btn.addEventListener('touchstart',votar,{passive:false});
+    btn.addEventListener('click',votar);
+    grid.appendChild(btn);
+  });
+
+  atualizarTotal();
+  mostrar('tela-votacao');
+}
+
+// ── VOTO ──────────────────────────────────────────────────────────
+function registrar(i,btn){
+  votos[i]++;
+  document.getElementById('vnum-'+i).textContent=votos[i];
+  atualizarTotal();
+  btn.classList.remove('pulse'); void btn.offsetWidth; btn.classList.add('pulse');
+  setTimeout(()=>btn.classList.remove('pulse'),300);
+  // Partículas
+  const rect=btn.getBoundingClientRect();
+  const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+  const cores=['#FBBF24','#34D399','#60A5FA','#F87171','#A78BFA','#FB923C'];
+  for(let k=0;k<10;k++){
+    const p=document.createElement('div'); p.className='part';
+    const ang=(Math.PI*2*k)/10, d=50+Math.random()*55, sz=7+Math.random()*8;
+    p.style.cssText=`left:${cx}px;top:${cy}px;width:${sz}px;height:${sz}px;background:${cores[k%cores.length]};border-radius:${Math.random()>.5?'50%':'4px'};--dx:${Math.cos(ang)*d}px;--dy:${Math.sin(ang)*d}px`;
+    document.body.appendChild(p); setTimeout(()=>p.remove(),700);
+  }
+  // Som
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const notas=[392,440,523,587,659]; const f=notas[i%notas.length];
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type='sine'; o.frequency.value=f;
+    g.gain.setValueAtTime(.18,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.25);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime+.25);
+  }catch(e){}
+}
+
+function atualizarTotal(){ document.getElementById('total-num').textContent=votos.reduce((a,b)=>a+b,0); }
+function zerarVotos(){ if(!confirm('Zerar todos os votos?'))return; votos=votos.map(()=>0); votos.forEach((_,i)=>{document.getElementById('vnum-'+i).textContent='0';}); atualizarTotal(); }
+
+// ── RESULTADO ─────────────────────────────────────────────────────
+function verResultado(){
+  const perg=document.getElementById('perg-exibida').textContent;
+  document.getElementById('res-perg-txt').textContent='"'+perg+'"';
+  const total=votos.reduce((a,b)=>a+b,0);
+  document.getElementById('res-total').textContent=total;
+  const maxV=Math.max(...votos);
+  const wrap=document.getElementById('res-barras'); wrap.innerHTML='';
+  resps.forEach((r,i)=>{
+    const v=votos[i]||0, pct=total>0?Math.round((v/total)*100):0;
+    const isVenc=v===maxV&&v>0;
+    const item=document.createElement('div'); item.className='res-item';
+    item.innerHTML=`
+      <div class="ri-emoji">${r.emoji}</div>
+      <div class="ri-label">${r.texto}${isVenc?'<span class="tag-venc">🏆</span>':''}</div>
+      <div class="ri-bg"><div class="ri-fill" id="rf-${i}" style="background:${r.cor}"><span class="ri-num">${v} voto${v!==1?'s':''}</span></div></div>
+      <div class="ri-pct">${pct}%</div>`;
+    wrap.appendChild(item);
+    setTimeout(()=>{ document.getElementById('rf-'+i).style.width=pct+'%'; },80);
+  });
+  mostrar('tela-resultado');
+}
+
+// ── NAVEGAÇÃO ─────────────────────────────────────────────────────
+function mostrar(id){ document.querySelectorAll('.tela').forEach(t=>t.classList.toggle('oculta',t.id!==id)); }
+function irProf()    { mostrar('tela-prof'); }
+function irVotacao() { mostrar('tela-votacao'); }
+
+// ── INIT ──────────────────────────────────────────────────────────
+montarPresets();
+renderResps();
+</script>
+</body>
+</html>
